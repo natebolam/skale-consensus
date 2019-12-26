@@ -27,7 +27,7 @@
 #include <exception>
 #include <string>
 
-class Exception : public std::exception, public boost::exception {
+class Exception : virtual public std::exception, public boost::exception {
 public:
     Exception( const std::string& _message, const std::string& _className ) {
         message = _className + ":" + _message;

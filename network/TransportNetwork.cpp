@@ -208,6 +208,8 @@ void TransportNetwork::postOrDefer(
         const ptr<NetworkMessageEnvelope> &m, const block_id &currentBlockID) {
     if (m->getMessage()->getBlockID() > currentBlockID) {
         addToDeferredMessageQueue(m);
+    } else if(currentBlockID + 1 >= MAX_ACTIVE_CONSENSUSES && m->getMessage()->getBlockID() <= currentBlockID + 1 - MAX_ACTIVE_CONSENSUSES ){
+        return;
     } else {
         auto msg = (NetworkMessage *) m->getMessage().get();
 

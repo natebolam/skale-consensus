@@ -326,7 +326,7 @@ void BinConsensusInstance::commitValueIfTwoThirds(ptr<BVBroadcastMessage> m) {
 
     auto r = m->r;
 
-    if (binValues[r].count(m->value))
+    if (binValues.count(r) && binValues[r].count(m->value))
         return;
 
 
@@ -358,7 +358,7 @@ void BinConsensusInstance::networkBroadcastValue(ptr<BVBroadcastMessage> m) {
     auto v = m->value;
     auto r = m->r;
 
-    if (broadcastValues[r].count(v) > 0)
+    if (broadcastValues.count(r) && broadcastValues[r].count(v) > 0)
         return;
 
     m->setSrcNodeID(getSchain()->getNode()->getNodeID());

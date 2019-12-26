@@ -347,8 +347,20 @@ ptr<BinConsensusInstance> BlockConsensusAgent::getChild(ptr<ProtocolKey> key) {
 
         lock_guard<recursive_mutex> lock(childrenMutex);
 
-        if (children.count(key) == 0)
+        // HACK remove prev here! (dirty way to test heap growth)
+        block_id current = this->getSchain()->getLastCommittedBlockID();
+        if(current + 1 > MAX_ACTIVE_CONSENSUSES){
+            ptr<ProtocolKey> old = make_shared<ProtocolKey>(current + 1 - MAX_ACTIVE_CONSENSUSES, key->getBlockProposerIndex());
+            if(children.count(old)){
+                children.erase(old);
+                cerr << "Deleting (" << old->getBlockID() << "," << old->getBlockProposerIndex() << ")" << endl;
+            }
+        }
+
+        if (children.count(key) == 0){
+            cerr << "Adding (" << key->getBlockID() << "," << key->getBlockProposerIndex() << ")" << endl;
             children[key] = make_shared<BinConsensusInstance>(this, key->getBlockID(), key->getBlockProposerIndex());
+        }
 
         return children.at(key);
 
