@@ -194,7 +194,7 @@ public:
 
     void processMessage(ptr<MessageEnvelope> _m);
 
-    void processParentProposal(ptr<InternalMessageEnvelope> _me);
+    void processSelfProposal(ptr<InternalMessageEnvelope> _me);
 
     BinConsensusInstance(BlockConsensusAgent* _instance, block_id _blockId, schain_index _blockProposerIndex,
             bool _initFromDB = false);

@@ -78,7 +78,7 @@ void BinConsensusInstance::processMessage(ptr<MessageEnvelope> _m) {
 
 
     } else if (msgOrigin == ORIGIN_PARENT) {
-        processParentProposal(dynamic_pointer_cast<InternalMessageEnvelope>(_m));
+        processSelfProposal(dynamic_pointer_cast<InternalMessageEnvelope>(_m));
     }
 }
 
@@ -132,7 +132,7 @@ void BinConsensusInstance::processNetworkMessageImpl(ptr<NetworkMessageEnvelope>
 
 }
 
-void BinConsensusInstance::processParentProposal(ptr<InternalMessageEnvelope> _me) {
+void BinConsensusInstance::processSelfProposal(ptr<InternalMessageEnvelope> _me) {
 
 
     auto m = dynamic_pointer_cast<BVBroadcastMessage>(_me->getMessage());
@@ -140,12 +140,15 @@ void BinConsensusInstance::processParentProposal(ptr<InternalMessageEnvelope> _m
 
     addToHistory(dynamic_pointer_cast<NetworkMessage>(m));
 
-
     ASSERT(m->r == 0);
-
 
     setProposal(m->r, m->value);
 
+    if (getSchain()->getNodeCount() == 1) {
+        // fake consensus - agree on what proposed yourself
+        decide(m->value);
+        return;
+    }
 
     networkBroadcastValue(m);
 
